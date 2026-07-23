@@ -41,4 +41,19 @@ LEFT JOIN gold_fact_product_event e
 GROUP BY a.acquisition_channel;
 
 
+-- 7. Activation Rate by industry
+WITH cte AS(
+	SELECT  t2.industry, COUNT(t1.account_id) AS 'Activated_Accounts' 
+    FROM  gold_fact_users t1 LEFT JOIN gold_fact_accounts t2 ON t1.account_id = t2.account_id
+    WHERE t1.is_Admin = TRUE
+    GROUP BY t2.industry
+)
+
+SELECT industry, ROUND(Activated_Accounts/(SELECT COUNT(*) FROM gold_fact_users),3)*100 AS 'activation_rate' FROM cte;
+
+
+-- 8. Activation Rate Overall
+SELECT ROUND(COUNT(t1.account_id)/(SELECT COUNT(*) FROM gold_fact_users),2)*100 AS 'activation_rate' 
+FROM gold_fact_users t1 JOIN gold_fact_users t2 ON t1.account_id = t2.account_id
+WHERE t1.is_admin = TRUE
 
